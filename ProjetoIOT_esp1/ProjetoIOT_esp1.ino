@@ -27,7 +27,7 @@ boolean luzLigada = false;
 
 WiFiClient wclient;  //Declares a WifiClient Object using ESP8266WiFi
 PubSubClient client(wclient, mqtt_server,  mqtt_port);  //instanciates client object
- 
+
 //Function is called when, a message is recieved in the MQTT server.
 void callback(const MQTT::Publish& pub) {
   Serial.print(pub.topic());

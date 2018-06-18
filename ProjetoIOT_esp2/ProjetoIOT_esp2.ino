@@ -1,7 +1,3 @@
-
-/*
-Many thanks to nikxha from the ESP8266 forum
-*/
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <SPI.h>
@@ -9,6 +5,7 @@ Many thanks to nikxha from the ESP8266 forum
 #include <PubSubClient.h>   // Read the rest of the article
 #include <stdlib.h>
 #include "DHTesp.h"
+#include <Servo.h>
 
 /* wiring the MFRC522 to ESP8266 (ESP-12)
 RST     = GPIO5
@@ -23,9 +20,11 @@ GND     = GND
 #define RST_PIN  5  // RST-PIN für RC522 - RFID - SPI - Modul GPIO5 
 #define SS_PIN  4  // SDA-PIN für RC522 - RFID - SPI - Modul GPIO4 
 #define DHTPIN D0
+#define SERVO D3
 
 MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance
 DHTesp dht;
+Servo tranca;
 
 const char *ssid =  "brisa-484946";   // cannot be longer than 32 characters!
 const char *pass =  "hlr046f3";   //
@@ -86,7 +85,8 @@ void setup() {
   dht.setup(DHTPIN);
   SPI.begin();           // Init SPI bus
   mfrc522.PCD_Init();    // Init MFRC522
- 
+  tranca.attach(SERVO);
+  tranca.write(30);
 }
 
 void loop() { 
@@ -177,6 +177,13 @@ void verificaRFID() {
     notificar(conteudo+": Liberado");
     if(ldr>700){
       client.publish(BASE_TOPIC+"light","ON");
+    }
+    for(int i= 30;i <= 150; i+=5){
+      tranca.write(i);
+    }
+    delay(3000);
+    for(int i= 150;i >= 30; i-=5){
+      tranca.write(i);
     }
   }else{
     Serial.println("Acesso negado!");
